@@ -1,5 +1,6 @@
 import pygame
 
+
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -9,16 +10,21 @@ screen_w = 860
 screen_h = 760
 
 screen = pygame.display.set_mode((screen_w, screen_h))
-pygame.display.set_caption('FlappyBird :)')
+pygame.display.set_caption('FlappyBird')
 
 # стартовые значения
 
-scroll = 4
+scroll = 6
 flying = False
 game_over = False
+rasst = 160
+pipe_chast = 1600
+last_pipe = 0
 running = True
+
 # подгрузка изображений
 bg = pygame.image.load('data/bg.png')
+button_img = pygame.image.load('data/restart.png')
 
 
 class Bird(pygame.sprite.Sprite):
@@ -47,6 +53,25 @@ class Bird(pygame.sprite.Sprite):
                 self.grav = -10
 
 
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("data/pipe.png")
+        self.rect = self.image.get_rect()
+
+        # позиция 1 - находится сверху, -1 - снизу
+
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - (rasst / 2)]
+        elif position == -1:
+            self.rect.topleft = [x, y + (rasst / 2)]
+
+    def update(self):
+        self.rect.x -= scroll
+
+
+pipe_group = pygame.sprite.Group()
 bird_group = pygame.sprite.Group()
 
 bird = Bird(100, int(screen_h / 2))
@@ -62,14 +87,27 @@ while running:
 
     screen.blit(bg, (0, 0))
 
+    pipe_group.draw(screen)
     bird_group.draw(screen)
     bird_group.update()
-
-    # проверка на столкновение
 
     if bird.rect.bottom >= 760 or bird.rect.bottom == 760:
         game_over = True
         flying = False
+
+    if flying == True and game_over == False:
+        # новые трубы
+        time_now = pygame.time.get_ticks()
+        if time_now - last_pipe > pipe_chast:
+            pipe_h = 100
+            niz_pipe = Pipe(screen_w, (screen_h / 2) + pipe_h, -1)
+            werh_pipe = Pipe(screen_w, (screen_h / 2) + pipe_h, 1)
+
+            pipe_group.add(niz_pipe)
+            pipe_group.add(werh_pipe)
+            last_pipe = time_now
+
+        pipe_group.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

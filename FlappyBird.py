@@ -1,6 +1,6 @@
+import random
+
 import pygame
-
-
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -10,7 +10,7 @@ screen_w = 860
 screen_h = 760
 
 screen = pygame.display.set_mode((screen_w, screen_h))
-pygame.display.set_caption('FlappyBird')
+pygame.display.set_caption('FlappyBird :)')
 
 # стартовые значения
 
@@ -24,7 +24,6 @@ running = True
 
 # подгрузка изображений
 bg = pygame.image.load('data/bg.png')
-button_img = pygame.image.load('data/restart.png')
 
 
 class Bird(pygame.sprite.Sprite):
@@ -99,7 +98,7 @@ while running:
         # новые трубы
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_chast:
-            pipe_h = 100
+            pipe_h = random.randint(-150, 150)
             niz_pipe = Pipe(screen_w, (screen_h / 2) + pipe_h, -1)
             werh_pipe = Pipe(screen_w, (screen_h / 2) + pipe_h, 1)
 

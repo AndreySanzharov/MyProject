@@ -1,5 +1,7 @@
 import random
 import pygame
+import os
+import sys
 
 pygame.init()
 
@@ -16,14 +18,39 @@ pygame.display.set_caption('FlappyBird')
 scroll = 6
 flying = False
 game_over = False
-rasst = 160
+rasst = 200
 pipe_chast = 1600
 last_pipe = 0
 score = 0
 running = True
 
-bg = pygame.image.load('data/bg.png')
-rest_img = pygame.image.load('data/restart.png')
+
+def play_music():
+    pygame.mixer.music.load(r'data\sound_0.mp3')
+    # for i in range(6, 0, -1):
+    # pygame.mixer.music.queue(r'data\sound_{}.mp3'.format(i))
+    pygame.mixer.music.play()
+
+
+def load_image(name, colorkey=None):
+    fullname = os.path.join("data", name)
+    if not os.path.isfile(fullname):
+        print("Не найдено")
+        sys.exit()
+    image = pygame.image.load(fullname)
+    if colorkey is not None:
+        image = image.convert()
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    else:
+        image = image.convert_alpha()
+    return image
+
+
+# Особая благодарность Анечке за прекрасные картинки для игры :)
+bg = load_image('Anya.png')
+rest_img = load_image('AnyaRestart.png')
 
 score_txt = pygame.font.SysFont('Bauhaus 93', 60)
 
@@ -43,11 +70,17 @@ class Bird(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("data/bird1.png")
+        self.image = load_image("AnyaSpaceShip.png")
         self.rect = self.image.get_rect()
         self.rect.y = screen_h / 2
         self.rect.x = screen_w / 6
         self.grav = 0
+
+    def get_right_pos(self):
+        return self.rect.right
+
+    def get_left_pos(self):
+        return self.rect.left
 
     # гравитация
     def update(self):
@@ -67,7 +100,7 @@ class Bird(pygame.sprite.Sprite):
 class Pipe(pygame.sprite.Sprite):
     def __init__(self, x, y, position):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("data/pipe.png")
+        self.image = load_image("AnyaPipe.png")
         self.rect = self.image.get_rect()
 
         # позиция 1 - находится сверху, -1 - снизу
@@ -77,6 +110,12 @@ class Pipe(pygame.sprite.Sprite):
             self.rect.bottomleft = [x, y - (rasst / 2)]
         elif position == -1:
             self.rect.topleft = [x, y + (rasst / 2)]
+
+    def get_right_pos(self):
+        return self.rect.right
+
+    def get_left_pos(self):
+        return self.rect.left
 
     def update(self):
         self.rect.x -= scroll
@@ -111,6 +150,7 @@ bird_group.add(bird)
 screen.blit(bg, (0, 0))
 button = Restart(screen_w // 2 - 50, screen_h // 2, rest_img)
 
+play_music()
 while running:
 
     clock.tick(fps)
@@ -123,13 +163,13 @@ while running:
     # подсчет очков
     propusk = False
     if len(pipe_group) > 0:
-        if bird_group.sprites()[0].rect.right > pipe_group.sprites()[0].rect.left and propusk is False:
+        if bird_group.sprites()[0].get_right_pos() > pipe_group.sprites()[0].get_left_pos():
             propusk = True
         if propusk:
-            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+            if bird_group.sprites()[0].get_left_pos() > pipe_group.sprites()[0].get_right_pos():
                 score += 1
                 propusk = False
-    draw_text(str(score // 100), score_txt, "white", int(screen_w / 2), 20)
+    draw_text(str(score // 100), score_txt, "green", int(screen_w / 2), 20)
 
     # проверка на столкновение
     if pygame.sprite.groupcollide(bird_group, pipe_group, False, False):
@@ -172,4 +212,5 @@ while running:
     bird_group.update()
 
 pygame.quit()
+
 

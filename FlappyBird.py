@@ -59,7 +59,7 @@ class Bird(pygame.sprite.Sprite):
                 self.rect.y += self.grav
 
         # подлет
-        if game_over == False:
+        if game_over is False:
             if pygame.mouse.get_pressed()[0]:
                 self.grav = -10
 
@@ -123,7 +123,7 @@ while running:
     # подсчет очков
     propusk = False
     if len(pipe_group) > 0:
-        if bird_group.sprites()[0].rect.right > pipe_group.sprites()[0].rect.left and propusk == False:
+        if bird_group.sprites()[0].rect.right > pipe_group.sprites()[0].rect.left and propusk is False:
             propusk = True
         if propusk:
             if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
@@ -165,12 +165,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
+        if event.type == pygame.MOUSEBUTTONDOWN and flying is False and game_over is False:
             flying = True
 
     pygame.display.update()
     bird_group.update()
 
 pygame.quit()
-
 

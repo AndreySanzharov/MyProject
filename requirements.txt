@@ -1,0 +1,8 @@
+pyinstaller-hooks-contrib==2021.5
+PyQt5==5.15.6
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.9.0
+pyqtgraph ==0.12.3
+pywin32-ctypes ==0.2.0
+setuptools==57.0.0
+wheel==0.36.2

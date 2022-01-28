@@ -25,8 +25,42 @@ score = 0
 running = True
 
 
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def start_screen():
+    intro_text = ["Flappy Bird", "",
+                  "Нажмите ЛКМ, чтобы начать игру", "",
+                  '']
+
+    fon = pygame.transform.scale(load_image('fon3.png'), (screen_w, screen_h))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('green'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(fps)
+
+
 def play_music():
-    pygame.mixer.music.load(r'data\sound_0.mp3')
+    pygame.mixer.music.load(r'data\sound_0.mp3')  # если в игре больше одной песни, то применяем цикл ниже
     # for i in range(6, 0, -1):
     # pygame.mixer.music.queue(r'data\sound_{}.mp3'.format(i))
     pygame.mixer.music.play()
@@ -139,6 +173,8 @@ class Restart():
         return off_func
 
 
+start_screen()
+
 pipe_group = pygame.sprite.Group()
 bird_group = pygame.sprite.Group()
 
@@ -204,13 +240,13 @@ while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            terminate()
         if event.type == pygame.MOUSEBUTTONDOWN and flying is False and game_over is False:
             flying = True
 
+
+    pygame.display.flip()
     pygame.display.update()
     bird_group.update()
 
 pygame.quit()
-
-
